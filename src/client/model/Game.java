@@ -1,0 +1,697 @@
+package client.model;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import common.model.Event;
+import common.network.data.Message;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+/**
+ * Created by Parsa on 1/21/2018 AD.
+ */
+public class Game implements World {
+
+    private Map myAttackMap;
+    private Map myDefenceMap;
+    private Player[] players;
+    private ArrayList<Path> paths;
+    private int currentTurn;
+
+    public static int MAX_TURNS_IN_GAME;
+    public static int STORM_RANGE;
+    public static int INITIAL_HEALTH;
+    public static int INITIAL_MONEY;
+    public static int INITIAL_BEANS_COUNT;
+    public static int INITIAL_STORMS_COUNT;
+
+    ArrayList<StormEvent> stormsInThisCycle;
+    ArrayList<BeanEvent> beansInThisCycle;
+    ArrayList<Tower> destroyedTowersInThisCycle;
+    ArrayList<Unit> deadUnitsInThisCycle;
+    ArrayList<Unit> passedUnitsInThisCycle;
+
+    private Consumer<Message> sender;
+
+    public Game(Consumer<Message> sender) {
+
+        this.sender = sender;
+        players = new Player[2];
+    }
+
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public void handleInitMessage(Message msg) {
+
+        currentTurn = 0;
+        System.out.println("init msg recived.");
+        System.out.println("Initializing Maps");
+        JsonObject mapObject = msg.args.get(0).getAsJsonObject().getAsJsonObject("map");
+        JsonArray mapSize = mapObject.getAsJsonArray("size");
+
+        int width = mapSize.get(0).getAsInt();
+        int height = mapSize.get(1).getAsInt();
+
+        this.myAttackMap = new Map(width, height);
+        this.myDefenceMap = new Map(width, height);
+
+        Cell[][] cells1 = new Cell[height][width];
+        Cell[][] cells2 = new Cell[height][width];
+
+        JsonArray cellsArray = mapObject.getAsJsonArray("cells");
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+
+                if (cellsArray.get(i).getAsString().charAt(j) == 'g') {
+                    cells1[i][j] = new GrassCell(j, i);
+                    cells2[i][j] = new GrassCell(j, i);
+                } else if (cellsArray.get(i).getAsString().charAt(j) == 'r') {
+                    cells1[i][j] = new RoadCell(j, i);
+                    cells2[i][j] = new RoadCell(j, i);
+                } else {
+                    cells1[i][j] = new BlockCell(j, i);
+                    cells2[i][j] = new BlockCell(j, i);
+                }
+            }
+        }
+
+        this.myAttackMap.setCells(cells1);
+        this.myDefenceMap.setCells(cells2);
+
+        System.out.println(myAttackMap);
+        System.out.println(myDefenceMap);
+
+
+        System.out.println("Initializing Paths");
+        paths = new ArrayList<Path>();
+        JsonArray pathArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("paths");
+
+        for (int i = 0; i < pathArray.size(); i++) {
+
+            JsonObject tmpPath = pathArray.get(i).getAsJsonObject();
+
+            int lenght = tmpPath.get("len").getAsInt();
+
+            ArrayList<RoadCell> tmpRoadCells = new ArrayList<RoadCell>();
+
+            JsonArray tmpCells = tmpPath.getAsJsonArray("cells");
+
+            for (int j = 0; j < tmpCells.size(); j++) {
+
+                int x = tmpCells.get(j).getAsJsonObject().get("x").getAsInt();
+                int y = tmpCells.get(j).getAsJsonObject().get("y").getAsInt();
+
+                tmpRoadCells.add(new RoadCell(x, y));
+            }
+
+            this.paths.add(new Path(tmpRoadCells));
+        }
+
+        for (int i = 0; i < paths.size(); i++) {
+            System.out.println(i + ":" + paths.get(i));
+        }
+
+        //init params
+        System.out.println("Initializing Parameters");
+        JsonArray paramsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("params");
+
+        int initHealth = paramsArray.get(0).getAsInt();
+        int initMoney = paramsArray.get(1).getAsInt();
+        int max_turn = paramsArray.get(2).getAsInt();
+        //int unitlvlup = paramsArray.get(3).getAsInt();
+        int beans = paramsArray.get(3).getAsInt();
+        int storms = paramsArray.get(4).getAsInt();
+        int stormRange = paramsArray.get(5).getAsInt();
+
+        INITIAL_HEALTH = initHealth;
+        INITIAL_MONEY = initMoney;
+        INITIAL_BEANS_COUNT = beans;
+        INITIAL_STORMS_COUNT = storms;
+        STORM_RANGE = stormRange;
+        MAX_TURNS_IN_GAME = max_turn;
+
+        players[0] = new Player(initMoney, 0, initHealth, beans, storms);
+        players[1] = new Player(initMoney, 0, initHealth, beans, storms);
+
+        System.out.println("0" + players[0]);
+        System.out.println("1" + players[1]);
+
+        JsonArray unitsDetails = paramsArray.get(6).getAsJsonArray();
+        JsonArray lightDetails = unitsDetails.get(0).getAsJsonArray();
+        JsonArray heavyDetails = unitsDetails.get(1).getAsJsonArray();
+
+        LightUnit.INITIAL_PRICE = lightDetails.get(0).getAsInt();
+        LightUnit.PRICE_INCREASE = lightDetails.get(1).getAsInt();
+        LightUnit.INITIAL_HEALTH = lightDetails.get(2).getAsInt();
+        LightUnit.HEALTH_COEFF = lightDetails.get(3).getAsDouble();
+        LightUnit.INITIAL_BOUNTY = lightDetails.get(4).getAsInt();
+        LightUnit.BOUNTY_INCREASE = lightDetails.get(5).getAsInt();
+        LightUnit.MOVE_SPEED = lightDetails.get(6).getAsInt();
+        LightUnit.DAMAGE = lightDetails.get(7).getAsInt();
+        LightUnit.VISION_RANGE = lightDetails.get(8).getAsInt();
+        LightUnit.LEVEL_UP_THRESHOLD = lightDetails.get(9).getAsInt();
+        LightUnit.ADDED_INCOME = lightDetails.get(10).getAsInt();
+
+        HeavyUnit.INITIAL_PRICE = heavyDetails.get(0).getAsInt();
+        HeavyUnit.PRICE_INCREASE = heavyDetails.get(1).getAsInt();
+        HeavyUnit.INITIAL_HEALTH = heavyDetails.get(2).getAsInt();
+        HeavyUnit.HEALTH_COEFF = heavyDetails.get(3).getAsDouble();
+        HeavyUnit.INITIAL_BOUNTY = heavyDetails.get(4).getAsInt();
+        HeavyUnit.BOUNTY_INCREASE = heavyDetails.get(5).getAsInt();
+        HeavyUnit.MOVE_SPEED = heavyDetails.get(6).getAsInt();
+        HeavyUnit.DAMAGE = heavyDetails.get(7).getAsInt();
+        HeavyUnit.VISION_RANGE = heavyDetails.get(8).getAsInt();
+        HeavyUnit.LEVEL_UP_THRESHOLD = heavyDetails.get(9).getAsInt();
+        HeavyUnit.ADDED_INCOME = heavyDetails.get(10).getAsInt();
+
+        JsonArray towersDetails = paramsArray.get(7).getAsJsonArray();
+        JsonArray archerDetails = towersDetails.get(0).getAsJsonArray();
+        JsonArray canonDetails = towersDetails.get(1).getAsJsonArray();
+
+        ArcherTower.INITIAL_PRICE = archerDetails.get(0).getAsInt();
+        ArcherTower.INITIAL_LEVEL_UP_PRICE = archerDetails.get(1).getAsInt();
+        ArcherTower.PRICE_COEFF = archerDetails.get(2).getAsDouble();
+        ArcherTower.INITIAL_DAMAGE = archerDetails.get(3).getAsInt();
+        ArcherTower.DAMAGE_COEFF = archerDetails.get(4).getAsDouble();
+        ArcherTower.ATTACK_SPEED = archerDetails.get(5).getAsInt();
+        ArcherTower.ATTACK_RANGE = archerDetails.get(6).getAsInt();
+        ArcherTower.ATTACK_RANGE_SUM = canonDetails.get(7).getAsInt();
+
+        CannonTower.INITIAL_PRICE = canonDetails.get(0).getAsInt();
+        CannonTower.INITIAL_LEVEL_UP_PRICE = canonDetails.get(1).getAsInt();
+        CannonTower.PRICE_COEFF = canonDetails.get(2).getAsDouble();
+        CannonTower.INITIAL_DAMAGE = canonDetails.get(3).getAsInt();
+        CannonTower.DAMAGE_COEFF = canonDetails.get(4).getAsDouble();
+        CannonTower.ATTACK_SPEED = canonDetails.get(5).getAsInt();
+        CannonTower.ATTACK_RANGE = canonDetails.get(6).getAsInt();
+        CannonTower.ATTACK_RANGE_SUM = canonDetails.get(7).getAsInt();
+
+    }
+
+    public void handleTurnMessage(Message msg) {
+
+        System.out.println("--------------------------------------------" + "turn " + currentTurn + " started--------------------------------------------");
+
+        ArrayList<Unit> unitsBeforeUpdate = new ArrayList<>();
+        ArrayList<Tower> towersBeforeUpdate = new ArrayList<>();
+
+        unitsBeforeUpdate.addAll(getMyUnits());
+        unitsBeforeUpdate.addAll(getEnemyUnits());
+
+        towersBeforeUpdate.addAll(getMyTowers());
+        towersBeforeUpdate.addAll(getVisibleEnemyTowers());
+
+        myAttackMap.empty();
+        myDefenceMap.empty();
+
+        System.out.println("My Units:");
+        JsonArray myUnitsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("myunits");
+
+        for (int i = 0; i < myUnitsArray.size(); i++) {
+
+            JsonArray tmpUnit = myUnitsArray.get(i).getAsJsonArray();
+
+            int uid = tmpUnit.get(0).getAsInt();
+            int x = tmpUnit.get(4).getAsJsonObject().get("x").getAsInt();
+            int y = tmpUnit.get(4).getAsJsonObject().get("y").getAsInt();
+            int lvl = tmpUnit.get(2).getAsInt();
+            int health = tmpUnit.get(3).getAsInt();
+            int remtick = tmpUnit.get(5).getAsInt();
+            int pid = tmpUnit.get(6).getAsInt();
+
+            if (tmpUnit.get(1).getAsString().equals("l")) {
+
+                LightUnit lightUnit = new LightUnit(x, y, Owner.ME, lvl, uid);
+                lightUnit.setHealth(health);
+                lightUnit.setPath(paths.get(pid));
+
+                Cell tmpCell = myAttackMap.getCells()[y][x];
+                if (tmpCell instanceof RoadCell)
+                    ((RoadCell) tmpCell).getUnits().add(lightUnit);
+
+                System.out.println(lightUnit);
+
+            } else if (tmpUnit.get(1).getAsString().equals("h")) {
+
+                HeavyUnit heavyUnit = new HeavyUnit(x, y, Owner.ME, lvl, uid);
+                heavyUnit.setHealth(health);
+                heavyUnit.setPath(paths.get(pid));
+
+                Cell tmpCell = myAttackMap.getCells()[y][x];
+                if (tmpCell instanceof RoadCell)
+                    ((RoadCell) tmpCell).getUnits().add(heavyUnit);
+                System.out.println(heavyUnit);
+            }
+        }
+
+        System.out.println("Enemy Units:");
+        JsonArray enemyUnitsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("enemyunits");
+
+        for (int i = 0; i < enemyUnitsArray.size(); i++) {
+
+            JsonArray tmpEnemyUnit = enemyUnitsArray.get(i).getAsJsonArray();
+
+            int uid = tmpEnemyUnit.get(0).getAsInt();
+            int x = tmpEnemyUnit.get(3).getAsJsonObject().get("x").getAsInt();
+            int y = tmpEnemyUnit.get(3).getAsJsonObject().get("y").getAsInt();
+            int lvl = tmpEnemyUnit.get(2).getAsInt();
+
+            if (tmpEnemyUnit.get(1).getAsString().equals("l")) {
+
+                LightUnit lightUnit = new LightUnit(x, y, Owner.ENEMY, lvl, uid);
+
+                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                if (tmpCell instanceof RoadCell)
+                    ((RoadCell) tmpCell).getUnits().add(lightUnit);
+
+                System.out.println(lightUnit);
+
+            } else if (tmpEnemyUnit.get(1).getAsString().equals("h")) {
+
+                HeavyUnit heavyUnit = new HeavyUnit(x, y, Owner.ENEMY, lvl, uid);
+
+                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                if (tmpCell instanceof RoadCell)
+                    ((RoadCell) tmpCell).getUnits().add(heavyUnit);
+                System.out.println(heavyUnit);
+            }
+        }
+
+        System.out.println("My Towers:");
+        JsonArray myTowersArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("mytowers");
+
+        for (int i = 0; i < myTowersArray.size(); i++) {
+
+            JsonArray tmpMyTower = myTowersArray.get(i).getAsJsonArray();
+
+            int tid = tmpMyTower.get(0).getAsInt();
+            int lvl = tmpMyTower.get(2).getAsInt();
+            int x = tmpMyTower.get(3).getAsJsonObject().get("x").getAsInt();
+            int y = tmpMyTower.get(3).getAsJsonObject().get("y").getAsInt();
+
+            if (tmpMyTower.get(1).getAsString().equals("a")) {
+
+                ArcherTower archerTower = new ArcherTower(x, y, Owner.ME, lvl, tid);
+                Cell tmpCell = myDefenceMap.getCells()[y][x];
+
+                if (tmpCell instanceof GrassCell) {
+                    ((GrassCell) tmpCell).setTower(archerTower);
+                }
+                System.out.println(archerTower);
+
+            } else if (tmpMyTower.get(1).getAsString().equals("c")) {
+
+                CannonTower canonTower = new CannonTower(x, y, Owner.ME, lvl, tid);
+                Cell tmpCell = myDefenceMap.getCells()[y][x];
+
+                if (tmpCell instanceof GrassCell) {
+                    ((GrassCell) tmpCell).setTower(canonTower);
+                }
+                System.out.println(canonTower);
+            }
+        }
+
+        System.out.println("Enemy Towers:");
+        JsonArray enemyTowersArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("enemytowers");
+
+        for (int i = 0; i < enemyTowersArray.size(); i++) {
+
+            JsonArray tmpEnemyTower = enemyTowersArray.get(i).getAsJsonArray();
+
+            int tid = tmpEnemyTower.get(0).getAsInt();
+            int lvl = tmpEnemyTower.get(2).getAsInt();
+            int x = tmpEnemyTower.get(3).getAsJsonObject().get("x").getAsInt();
+            int y = tmpEnemyTower.get(3).getAsJsonObject().get("y").getAsInt();
+
+            if (tmpEnemyTower.get(1).getAsString().equals("a")) {
+
+                ArcherTower archerTower = new ArcherTower(x, y, Owner.ENEMY, lvl, tid);
+                Cell tmpCell = myAttackMap.getCells()[y][x];
+
+                if (tmpCell instanceof GrassCell) {
+                    ((GrassCell) tmpCell).setTower(archerTower);
+                }
+                System.out.println(archerTower);
+
+            } else if (tmpEnemyTower.get(1).getAsString().equals("c")) {
+
+                CannonTower canonTower = new CannonTower(x, y, Owner.ENEMY, lvl, tid);
+                Cell tmpCell = myAttackMap.getCells()[y][x];
+
+                if (tmpCell instanceof GrassCell) {
+                    ((GrassCell) tmpCell).setTower(canonTower);
+                }
+                System.out.println(canonTower);
+            }
+        }
+
+        System.out.println("Players Update:");
+        JsonArray playersDetails = msg.args.get(0).getAsJsonObject().getAsJsonArray("players");
+        JsonArray myDetails = playersDetails.get(0).getAsJsonArray();
+        JsonArray enemyDetails = playersDetails.get(1).getAsJsonArray();
+
+        int myHealth = myDetails.get(0).getAsInt();
+        int myMoney = myDetails.get(1).getAsInt();
+        int myIncome = myDetails.get(2).getAsInt();
+        int myRemBeans = myDetails.get(3).getAsInt();
+        int myRemStorms = myDetails.get(4).getAsInt();
+
+        players[0] = new Player(myMoney, myIncome, myHealth, myRemBeans, myRemStorms);
+        System.out.println("0" + players[0]);
+        int enemyHealth = enemyDetails.get(0).getAsInt();
+        int enemyRemBeans = enemyDetails.get(1).getAsInt();
+        int enemyRemStorms = enemyDetails.get(2).getAsInt();
+
+        players[1] = new Player(0, 0, enemyHealth, enemyRemBeans, enemyRemStorms);
+        System.out.println("1" + players[1]);
+
+        System.out.println("Events:");
+        JsonObject eventsObject = msg.args.get(0).getAsJsonObject().get("events").getAsJsonObject();
+
+        JsonArray deadunitsArray = eventsObject.getAsJsonArray("deadunits");
+
+        deadUnitsInThisCycle = new ArrayList<>();
+        for (int i = 0; i < deadunitsArray.size(); i++) {
+            JsonArray tmpDead = deadunitsArray.get(i).getAsJsonArray();
+            System.out.println("Unit Died-> " + "isMymap:" + tmpDead.get(0).getAsInt() + " - uId:" + tmpDead.get(1).getAsString());//function for this shit.
+
+            for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
+                if (unitsBeforeUpdate.get(j).getId() == tmpDead.get(1).getAsInt()) {
+                    deadUnitsInThisCycle.add(unitsBeforeUpdate.get(j));
+                }
+            }
+        }
+
+        JsonArray endOfPathArray = eventsObject.getAsJsonArray("endofpath");
+        passedUnitsInThisCycle = new ArrayList<>();
+        for (int i = 0; i < endOfPathArray.size(); i++) {
+            JsonArray tmpEnd = endOfPathArray.get(i).getAsJsonArray();
+            System.out.println("Unit reached End Of Path-> " + "isMymap:" + tmpEnd.get(0).getAsInt() + " - uId:" + tmpEnd.get(1).getAsString());//function for this shit
+
+            for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
+                if (unitsBeforeUpdate.get(j).getId() == tmpEnd.get(1).getAsInt()) {
+                    passedUnitsInThisCycle.add(unitsBeforeUpdate.get(j));
+                }
+            }
+        }
+
+        JsonArray desTowersArray = eventsObject.getAsJsonArray("destroyedtowers");
+        destroyedTowersInThisCycle = new ArrayList<>();
+        for (int i = 0; i < desTowersArray.size(); i++) {
+            JsonArray tmpTower = desTowersArray.get(i).getAsJsonArray();
+
+            int tid = tmpTower.get(1).getAsInt();
+            int isMymap = tmpTower.get(0).getAsInt();
+
+            System.out.println("Tower destroyed  -> " + "isMymap:" + isMymap + " - tId:" + tid);
+
+            for (int j = 0; j < towersBeforeUpdate.size(); j++) {
+                if (towersBeforeUpdate.get(j).getId() == tid)
+                    destroyedTowersInThisCycle.add(towersBeforeUpdate.get(j));
+            }
+        }
+
+        JsonArray beansArray = eventsObject.getAsJsonArray("beans");
+        beansInThisCycle = new ArrayList<>();
+        for (int i = 0; i < beansArray.size(); i++) {
+            JsonArray tmpBean = beansArray.get(i).getAsJsonArray();
+
+            int x = tmpBean.get(1).getAsJsonObject().get("x").getAsInt();
+            int y = tmpBean.get(1).getAsJsonObject().get("y").getAsInt();
+
+            int isMymap = tmpBean.get(0).getAsInt();
+
+            System.out.println("Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
+            if (isMymap == 0) {
+                beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
+                getMyAttackMap().getCells()[y][x] = new BlockCell(x, y);
+            } else {
+                beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
+                getMyDefenceMap().getCells()[y][x] = new BlockCell(x, y);
+            }
+        }
+
+        JsonArray stormsArray = eventsObject.getAsJsonArray("storms");
+        stormsInThisCycle = new ArrayList<>();
+        for (int i = 0; i < stormsArray.size(); i++) {
+            JsonArray tmpstorm = stormsArray.get(i).getAsJsonArray();
+
+            int x = tmpstorm.get(1).getAsJsonObject().get("x").getAsInt();
+            int y = tmpstorm.get(1).getAsJsonObject().get("y").getAsInt();
+            int isMymap = tmpstorm.get(0).getAsInt();
+
+            if (isMymap == 0)
+                stormsInThisCycle.add(new StormEvent(Owner.ENEMY, new Point(x, y)));
+            else stormsInThisCycle.add(new StormEvent(Owner.ME, new Point(x, y)));
+            System.out.println("Storm created At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
+        }
+        System.out.println("--------------------------------------------turn " + currentTurn + " finished--------------------------------------------");
+    }
+
+    public void createArcherTower(int lvl, int x, int y) {
+
+        Event event = new Event("ct", new Object[]{"a", lvl, x, y});
+        sender.accept(new Message(Event.EVENT, event));
+        System.out.println("Request: create ArcherTower @ x:" + x + " y:" + y + " Level:" + lvl);
+    }
+
+    public void createCannonTower(int lvl, int x, int y) {
+
+        Event event = new Event("ct", new Object[]{"c", lvl, x, y});
+        sender.accept(new Message(Event.EVENT, event));
+        System.out.println("Request: create CannonTower @ x:" + x + " y:" + y + " Level:" + lvl);
+
+    }
+
+    public void createLightUnit(int pathIndex) {
+
+        Event event = new Event("cu", new Object[]{"l", pathIndex});
+        sender.accept(new Message(Event.EVENT, event));
+
+        System.out.println("Request: create LightUnit @ path number:" + pathIndex);
+
+    }
+
+    public void createHeavyUnit(int pathIndex) {
+
+        Event event = new Event("cu", new Object[]{"h", pathIndex});
+        sender.accept(new Message(Event.EVENT, event));
+
+        System.out.println("Request: create HeavyUnit @ path number:" + pathIndex);
+    }
+
+    public void upgradeTower(int tid) {
+
+        Event event = new Event("ut", new Object[]{tid});
+        sender.accept(new Message(Event.EVENT, event));
+
+        System.out.println("Request: upgrade tower with tid:" + tid);
+    }
+
+    public void plantBean(int x, int y) {
+
+        Event event = new Event("b", new Object[]{x, y});
+        sender.accept(new Message(Event.EVENT, event));
+        System.out.println("Request: plant bean @ x:" + x + " y:" + y);
+    }
+
+    public void createStorm(int x, int y) {
+
+        Event event = new Event("s", new Object[]{x, y});
+        sender.accept(new Message(Event.EVENT, event));
+        System.out.println("Request: create storm @ x:" + x + " y:" + y);
+    }
+
+    public ArrayList<Unit> getMyUnits() {
+
+        ArrayList<Unit> myUnits = new ArrayList<>();
+
+        for (int i = 0; i < myAttackMap.getHeight(); i++) {
+            for (int j = 0; j < myAttackMap.getWidth(); j++) {
+                Cell tmp = myAttackMap.getCells()[i][j];
+                if (tmp instanceof RoadCell) {
+                    for (int k = 0; k < ((RoadCell) tmp).getUnits().size(); k++) {
+                        if (((RoadCell) tmp).getUnits().get(k).getOwner() == Owner.ME) {
+                            myUnits.add(((RoadCell) tmp).getUnits().get(k));
+                        }
+                    }
+                }
+            }
+        }
+
+        return myUnits;
+    }
+
+    public ArrayList<Unit> getEnemyUnits() {
+
+        ArrayList<Unit> enemyUnits = new ArrayList<Unit>();
+
+        for (int i = 0; i < myDefenceMap.getHeight(); i++) {
+            for (int j = 0; j < myDefenceMap.getWidth(); j++) {
+                Cell tmp = myDefenceMap.getCells()[i][j];
+                if (tmp instanceof RoadCell) {
+                    for (int k = 0; k < ((RoadCell) tmp).getUnits().size(); k++) {
+                        if (((RoadCell) tmp).getUnits().get(k).getOwner() == Owner.ENEMY) {
+                            enemyUnits.add(((RoadCell) tmp).getUnits().get(k));
+                        }
+                    }
+                }
+            }
+        }
+        return enemyUnits;
+    }
+
+    public ArrayList<Tower> getMyTowers() {
+
+        ArrayList<Tower> myTowers = new ArrayList<>();
+
+        for (int i = 0; i < myDefenceMap.getHeight(); i++) {
+            for (int j = 0; j < myDefenceMap.getWidth(); j++) {
+                Cell tmp = myDefenceMap.getCells()[i][j];
+                if (tmp instanceof GrassCell) {
+                    try {
+                        if (((GrassCell) tmp).getTower().getOwner() == Owner.ME) {
+                            myTowers.add(((GrassCell) tmp).getTower());
+                        }
+                    } catch (Exception e) {
+                    }
+
+                }
+            }
+        }
+        return myTowers;
+    }
+
+    public ArrayList<Tower> getVisibleEnemyTowers() {
+
+        ArrayList<Tower> enemyTowers = new ArrayList<Tower>();
+
+        for (int i = 0; i < myAttackMap.getHeight(); i++) {
+            for (int j = 0; j < myAttackMap.getWidth(); j++) {
+                Cell tmp = myAttackMap.getCells()[i][j];
+                if (tmp instanceof GrassCell) {
+                    try {
+                        if (((GrassCell) tmp).getTower().getOwner() == Owner.ENEMY) {
+                            enemyTowers.add(((GrassCell) tmp).getTower());
+                        }
+                    } catch (Exception e) {
+                    }
+
+                }
+            }
+        }
+        return enemyTowers;
+    }
+
+    public ArrayList<Path> getPaths() {
+        return paths;
+    }
+
+    public Player getEnemyInformation() {
+        return players[1];
+    }
+
+    public Player getMyInformation() {
+        return players[0];
+    }
+
+    public Map getMyAttackMap() {
+        return myAttackMap;
+    }
+
+    public Map getMyDefenceMap() {
+        return myDefenceMap;
+    }
+
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+
+    public void setCurrentTurn(int currentTurn) {
+        this.currentTurn = currentTurn;
+    }
+
+    public boolean isTowerConstructable(Cell cell) {
+        if (cell instanceof RoadCell)
+            return false;
+
+        else if (cell instanceof BlockCell)
+            return false;
+
+        else if (cell instanceof GrassCell) {
+
+            if (((GrassCell) cell).getTower() != null)
+                return false;
+
+            else {
+
+                int x = cell.getPoint().getX();
+                int y = cell.getPoint().getY();
+
+                ArrayList<Cell> adjnct = new ArrayList<>();
+
+                try {
+                    adjnct.add(myDefenceMap.getCells()[y - 1][x]);
+                } catch (Exception e) {
+                }
+
+                try {
+                    adjnct.add(myDefenceMap.getCells()[y + 1][x]);
+                } catch (Exception e) {
+                }
+
+                try {
+                    adjnct.add(myDefenceMap.getCells()[y][x + 1]);
+                } catch (Exception e) {
+                }
+
+                try {
+                    adjnct.add(myDefenceMap.getCells()[y][x - 1]);
+                } catch (Exception e) {
+                }
+
+
+                for (int i = 0; i < adjnct.size(); i++) {
+                    if (adjnct.get(i) instanceof GrassCell) {
+                        if (((GrassCell) adjnct.get(i)).getTower() != null)
+                            return false;
+                    }
+                }
+
+                return true;
+
+            }
+
+        }
+        return false;
+    }
+
+    @Override
+    public ArrayList<BeanEvent> getBeansInThisTurn() {
+        return beansInThisCycle;
+    }
+
+    @Override
+    public ArrayList<StormEvent> getStormsInThisTurn() {
+        return stormsInThisCycle;
+    }
+
+    @Override
+    public ArrayList<Tower> getDestroyedTowersInThisTurn() {
+        return destroyedTowersInThisCycle;
+    }
+
+    @Override
+    public ArrayList<Unit> getDeadUnitsInThisTurn() {
+        return deadUnitsInThisCycle;
+    }
+
+    @Override
+    public ArrayList<Unit> getPassedUnitsInThisTurn() {
+        return passedUnitsInThisCycle;
+    }
+}
