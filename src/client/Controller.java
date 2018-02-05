@@ -127,7 +127,7 @@ public class Controller {
             Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
         }
         Log.d(TAG, "");
-        Log.d(TAG, "DestroyedTower-------");
+        Log.d(TAG, "DestroyedTowers-------");
         for (int i = 0; i < game.getDestroyedTowersInThisTurn().size(); i++) {
             Log.d(TAG, "Destroyed:" + game.getDestroyedTowersInThisTurn().get(i));
         }
@@ -137,12 +137,12 @@ public class Controller {
             Log.d(TAG, "Passed:" + game.getPassedUnitsInThisTurn().get(i));
         }
         Log.d(TAG, "");
-        Log.d(TAG, "BeanEvent---------");
+        Log.d(TAG, "BeanEvents---------");
         for (int i = 0; i < game.getBeansInThisTurn().size(); i++) {
             Log.d(TAG, "Bean:" + game.getBeansInThisTurn().get(i));
         }
         Log.d(TAG, "");
-        Log.d(TAG, "StormEvent-------");
+        Log.d(TAG, "StormEvents-------");
         for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
             Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
         }
