@@ -121,7 +121,27 @@ public class Controller {
         game.setCurrentTurn(game.getCurrentTurn() + 1);
         game.handleTurnMessage(msg);
 
-        Log.d(TAG, "*^*^*^*^*^*^LOG-START*^*^*^*^*^*^");
+        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-START----------------");
+        Log.d(TAG,"MyUnits");
+        for (int i = 0; i < game.getMyUnits().size(); i++) {
+            Log.d(TAG,"Alive:"+game.getMyUnits().get(i));
+        }
+        Log.d(TAG,"");
+        Log.d(TAG,"EnemyUnits");
+        for (int i = 0; i < game.getEnemyUnits().size(); i++) {
+            Log.d(TAG,"Alive:"+game.getEnemyUnits().get(i));
+        }
+        Log.d(TAG,"");
+        Log.d(TAG,"MyTowers");
+        for (int i = 0; i < game.getMyTowers().size(); i++) {
+            Log.d(TAG,"Working:"+game.getMyTowers().get(i));
+        }
+        Log.d(TAG,"");
+        Log.d(TAG,"EnemyTowers");
+        for (int i = 0; i < game.getVisibleEnemyTowers().size(); i++) {
+            Log.d(TAG,"Working:"+game.getVisibleEnemyTowers().get(i));
+        }
+        Log.d(TAG,"");
         Log.d(TAG, "DeadUnits---------");
         for (int i = 0; i < game.getDeadUnitsInThisTurn().size(); i++) {
             Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
@@ -146,14 +166,22 @@ public class Controller {
         for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
             Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
         }
-        Log.d(TAG, "*^*^*^*^*^*^LOG-END*^*^*^*^*^*^");
+        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-END----------------");
 
 
-        if ((game.getCurrentTurn() % 10) != 0)
+        if ((game.getCurrentTurn() % 10) != 0){
+            Log.d(TAG,"");
+            Log.d(TAG,"lightTurn Called");
             lightTurn();
+        }
 
-        else if (game.getCurrentTurn() % 10 == 0 && game.getCurrentTurn() != 0)
+
+        else if (game.getCurrentTurn() % 10 == 0 && game.getCurrentTurn() != 0){
+            Log.d(TAG,"");
+            Log.d(TAG,"HeavyTurn Called");
             heavyTurn();
+        }
+
     }
 
     /**
