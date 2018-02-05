@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import common.model.Event;
 import common.network.data.Message;
+import common.util.Log;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -12,7 +13,6 @@ import java.util.function.Consumer;
  * Created by Parsa on 1/21/2018 AD.
  */
 public class Game implements World {
-
     private Map myAttackMap;
     private Map myDefenceMap;
     private Player[] players;
@@ -33,6 +33,7 @@ public class Game implements World {
     ArrayList<Unit> passedUnitsInThisCycle;
 
     private Consumer<Message> sender;
+    private final String TAG = "GAME";
 
     public Game(Consumer<Message> sender) {
 
@@ -47,8 +48,8 @@ public class Game implements World {
     public void handleInitMessage(Message msg) {
 
         currentTurn = 0;
-        System.out.println("init msg recived.");
-        System.out.println("Initializing Maps");
+        Log.d(TAG, "init msg recived.");
+        Log.d(TAG, "Initializing Maps");
         JsonObject mapObject = msg.args.get(0).getAsJsonObject().getAsJsonObject("map");
         JsonArray mapSize = mapObject.getAsJsonArray("size");
 
@@ -82,11 +83,11 @@ public class Game implements World {
         this.myAttackMap.setCells(cells1);
         this.myDefenceMap.setCells(cells2);
 
-        System.out.println(myAttackMap);
-        System.out.println(myDefenceMap);
+        Log.d(TAG, myAttackMap.toString());
+        Log.d(TAG, myDefenceMap.toString());
 
 
-        System.out.println("Initializing Paths");
+        Log.d(TAG, "Initializing Paths");
         paths = new ArrayList<Path>();
         JsonArray pathArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("paths");
 
@@ -112,11 +113,11 @@ public class Game implements World {
         }
 
         for (int i = 0; i < paths.size(); i++) {
-            System.out.println(i + ":" + paths.get(i));
+            Log.d(TAG, i + ":" + paths.get(i));
         }
 
         //init params
-        System.out.println("Initializing Parameters");
+        Log.d(TAG, "Initializing Parameters");
         JsonArray paramsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("params");
 
         int initHealth = paramsArray.get(0).getAsInt();
@@ -137,8 +138,8 @@ public class Game implements World {
         players[0] = new Player(initMoney, 0, initHealth, beans, storms);
         players[1] = new Player(initMoney, 0, initHealth, beans, storms);
 
-        System.out.println("0" + players[0]);
-        System.out.println("1" + players[1]);
+        Log.d(TAG, "0" + players[0]);
+        Log.d(TAG, "1" + players[1]);
 
         JsonArray unitsDetails = paramsArray.get(6).getAsJsonArray();
         JsonArray lightDetails = unitsDetails.get(0).getAsJsonArray();
@@ -194,7 +195,7 @@ public class Game implements World {
 
     public void handleTurnMessage(Message msg) {
 
-        System.out.println("--------------------------------------------" + "turn " + currentTurn + " started--------------------------------------------");
+        Log.d(TAG, "--------------------------------------------" + "turn " + currentTurn + " started--------------------------------------------");
 
         ArrayList<Unit> unitsBeforeUpdate = new ArrayList<>();
         ArrayList<Tower> towersBeforeUpdate = new ArrayList<>();
@@ -208,7 +209,7 @@ public class Game implements World {
         myAttackMap.empty();
         myDefenceMap.empty();
 
-        System.out.println("My Units:");
+        Log.d(TAG, "My Units:");
         JsonArray myUnitsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("myunits");
 
         for (int i = 0; i < myUnitsArray.size(); i++) {
@@ -233,7 +234,7 @@ public class Game implements World {
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(lightUnit);
 
-                System.out.println(lightUnit);
+                Log.d(TAG, lightUnit.toString());
 
             } else if (tmpUnit.get(1).getAsString().equals("h")) {
 
@@ -244,11 +245,11 @@ public class Game implements World {
                 Cell tmpCell = myAttackMap.getCells()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(heavyUnit);
-                System.out.println(heavyUnit);
+                Log.d(TAG, heavyUnit.toString());
             }
         }
 
-        System.out.println("Enemy Units:");
+        Log.d(TAG, "Enemy Units:");
         JsonArray enemyUnitsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("enemyunits");
 
         for (int i = 0; i < enemyUnitsArray.size(); i++) {
@@ -268,7 +269,7 @@ public class Game implements World {
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(lightUnit);
 
-                System.out.println(lightUnit);
+                Log.d(TAG, lightUnit.toString());
 
             } else if (tmpEnemyUnit.get(1).getAsString().equals("h")) {
 
@@ -277,11 +278,11 @@ public class Game implements World {
                 Cell tmpCell = myDefenceMap.getCells()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(heavyUnit);
-                System.out.println(heavyUnit);
+                Log.d(TAG, heavyUnit.toString());
             }
         }
 
-        System.out.println("My Towers:");
+        Log.d(TAG, "My Towers:");
         JsonArray myTowersArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("mytowers");
 
         for (int i = 0; i < myTowersArray.size(); i++) {
@@ -301,7 +302,7 @@ public class Game implements World {
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(archerTower);
                 }
-                System.out.println(archerTower);
+                Log.d(TAG, archerTower.toString());
 
             } else if (tmpMyTower.get(1).getAsString().equals("c")) {
 
@@ -311,11 +312,11 @@ public class Game implements World {
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(canonTower);
                 }
-                System.out.println(canonTower);
+                Log.d(TAG, canonTower.toString());
             }
         }
 
-        System.out.println("Enemy Towers:");
+        Log.d(TAG, "Enemy Towers:");
         JsonArray enemyTowersArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("enemytowers");
 
         for (int i = 0; i < enemyTowersArray.size(); i++) {
@@ -335,7 +336,7 @@ public class Game implements World {
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(archerTower);
                 }
-                System.out.println(archerTower);
+                Log.d(TAG, archerTower.toString());
 
             } else if (tmpEnemyTower.get(1).getAsString().equals("c")) {
 
@@ -345,11 +346,11 @@ public class Game implements World {
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(canonTower);
                 }
-                System.out.println(canonTower);
+                Log.d(TAG, canonTower.toString());
             }
         }
 
-        System.out.println("Players Update:");
+        Log.d(TAG, "Players Update:");
         JsonArray playersDetails = msg.args.get(0).getAsJsonObject().getAsJsonArray("players");
         JsonArray myDetails = playersDetails.get(0).getAsJsonArray();
         JsonArray enemyDetails = playersDetails.get(1).getAsJsonArray();
@@ -361,15 +362,15 @@ public class Game implements World {
         int myRemStorms = myDetails.get(4).getAsInt();
 
         players[0] = new Player(myMoney, myIncome, myHealth, myRemBeans, myRemStorms);
-        System.out.println("0" + players[0]);
+        Log.d(TAG, "0" + players[0]);
         int enemyHealth = enemyDetails.get(0).getAsInt();
         int enemyRemBeans = enemyDetails.get(1).getAsInt();
         int enemyRemStorms = enemyDetails.get(2).getAsInt();
 
         players[1] = new Player(0, 0, enemyHealth, enemyRemBeans, enemyRemStorms);
-        System.out.println("1" + players[1]);
+        Log.d(TAG, "1" + players[1]);
 
-        System.out.println("Events:");
+        Log.d(TAG, "Events:");
         JsonObject eventsObject = msg.args.get(0).getAsJsonObject().get("events").getAsJsonObject();
 
         JsonArray deadunitsArray = eventsObject.getAsJsonArray("deadunits");
@@ -377,7 +378,7 @@ public class Game implements World {
         deadUnitsInThisCycle = new ArrayList<>();
         for (int i = 0; i < deadunitsArray.size(); i++) {
             JsonArray tmpDead = deadunitsArray.get(i).getAsJsonArray();
-            System.out.println("Unit Died-> " + "isMymap:" + tmpDead.get(0).getAsInt() + " - uId:" + tmpDead.get(1).getAsString());//function for this shit.
+            Log.d(TAG, "Unit Died-> " + "isMymap:" + tmpDead.get(0).getAsInt() + " - uId:" + tmpDead.get(1).getAsString());//function for this shit.
 
             for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
                 if (unitsBeforeUpdate.get(j).getId() == tmpDead.get(1).getAsInt()) {
@@ -390,7 +391,7 @@ public class Game implements World {
         passedUnitsInThisCycle = new ArrayList<>();
         for (int i = 0; i < endOfPathArray.size(); i++) {
             JsonArray tmpEnd = endOfPathArray.get(i).getAsJsonArray();
-            System.out.println("Unit reached End Of Path-> " + "isMymap:" + tmpEnd.get(0).getAsInt() + " - uId:" + tmpEnd.get(1).getAsString());//function for this shit
+            Log.d(TAG, "Unit reached End Of Path-> " + "isMymap:" + tmpEnd.get(0).getAsInt() + " - uId:" + tmpEnd.get(1).getAsString());//function for this shit
 
             for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
                 if (unitsBeforeUpdate.get(j).getId() == tmpEnd.get(1).getAsInt()) {
@@ -407,7 +408,7 @@ public class Game implements World {
             int tid = tmpTower.get(1).getAsInt();
             int isMymap = tmpTower.get(0).getAsInt();
 
-            System.out.println("Tower destroyed  -> " + "isMymap:" + isMymap + " - tId:" + tid);
+            Log.d(TAG, "Tower destroyed  -> " + "isMymap:" + isMymap + " - tId:" + tid);
 
             for (int j = 0; j < towersBeforeUpdate.size(); j++) {
                 if (towersBeforeUpdate.get(j).getId() == tid)
@@ -425,7 +426,7 @@ public class Game implements World {
 
             int isMymap = tmpBean.get(0).getAsInt();
 
-            System.out.println("Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
+            Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
             if (isMymap == 0) {
                 beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
                 getMyAttackMap().getCells()[y][x] = new BlockCell(x, y);
@@ -447,23 +448,23 @@ public class Game implements World {
             if (isMymap == 0)
                 stormsInThisCycle.add(new StormEvent(Owner.ENEMY, new Point(x, y)));
             else stormsInThisCycle.add(new StormEvent(Owner.ME, new Point(x, y)));
-            System.out.println("Storm created At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
+            Log.d(TAG, "Storm created At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
         }
-        System.out.println("--------------------------------------------turn " + currentTurn + " finished--------------------------------------------");
+        Log.d(TAG, "--------------------------------------------turn " + currentTurn + " finished--------------------------------------------");
     }
 
     public void createArcherTower(int lvl, int x, int y) {
 
         Event event = new Event("ct", new Object[]{"a", lvl, x, y});
         sender.accept(new Message(Event.EVENT, event));
-        System.out.println("Request: create ArcherTower @ x:" + x + " y:" + y + " Level:" + lvl);
+        Log.d(TAG, "Request: create ArcherTower @ x:" + x + " y:" + y + " Level:" + lvl);
     }
 
     public void createCannonTower(int lvl, int x, int y) {
 
         Event event = new Event("ct", new Object[]{"c", lvl, x, y});
         sender.accept(new Message(Event.EVENT, event));
-        System.out.println("Request: create CannonTower @ x:" + x + " y:" + y + " Level:" + lvl);
+        Log.d(TAG, "Request: create CannonTower @ x:" + x + " y:" + y + " Level:" + lvl);
 
     }
 
@@ -472,7 +473,7 @@ public class Game implements World {
         Event event = new Event("cu", new Object[]{"l", pathIndex});
         sender.accept(new Message(Event.EVENT, event));
 
-        System.out.println("Request: create LightUnit @ path number:" + pathIndex);
+        Log.d(TAG, "Request: create LightUnit @ path number:" + pathIndex);
 
     }
 
@@ -481,7 +482,7 @@ public class Game implements World {
         Event event = new Event("cu", new Object[]{"h", pathIndex});
         sender.accept(new Message(Event.EVENT, event));
 
-        System.out.println("Request: create HeavyUnit @ path number:" + pathIndex);
+        Log.d(TAG, "Request: create HeavyUnit @ path number:" + pathIndex);
     }
 
     public void upgradeTower(int tid) {
@@ -489,21 +490,21 @@ public class Game implements World {
         Event event = new Event("ut", new Object[]{tid});
         sender.accept(new Message(Event.EVENT, event));
 
-        System.out.println("Request: upgrade tower with tid:" + tid);
+        Log.d(TAG, "Request: upgrade tower with tid:" + tid);
     }
 
     public void plantBean(int x, int y) {
 
         Event event = new Event("b", new Object[]{x, y});
         sender.accept(new Message(Event.EVENT, event));
-        System.out.println("Request: plant bean @ x:" + x + " y:" + y);
+        Log.d(TAG, "Request: plant bean @ x:" + x + " y:" + y);
     }
 
     public void createStorm(int x, int y) {
 
         Event event = new Event("s", new Object[]{x, y});
         sender.accept(new Message(Event.EVENT, event));
-        System.out.println("Request: create storm @ x:" + x + " y:" + y);
+        Log.d(TAG, "Request: create storm @ x:" + x + " y:" + y);
     }
 
     public ArrayList<Unit> getMyUnits() {

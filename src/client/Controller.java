@@ -121,6 +121,34 @@ public class Controller {
         game.setCurrentTurn(game.getCurrentTurn() + 1);
         game.handleTurnMessage(msg);
 
+        Log.d(TAG, "*^*^*^*^*^*^LOG*^*^*^*^*^*^");
+        Log.d(TAG, "DeadUnits---------");
+        for (int i = 0; i < game.getDeadUnitsInThisTurn().size(); i++) {
+            Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
+        }
+        Log.d(TAG, "");
+        Log.d(TAG, "DestroyedTower-------");
+        for (int i = 0; i < game.getDestroyedTowersInThisTurn().size(); i++) {
+            Log.d(TAG, "Destroyed:" + game.getDestroyedTowersInThisTurn().get(i));
+        }
+        Log.d(TAG, "");
+        Log.d(TAG, "PassedUnits--------");
+        for (int i = 0; i < game.getPassedUnitsInThisTurn().size(); i++) {
+            Log.d(TAG, "Passed:" + game.getPassedUnitsInThisTurn().get(i));
+        }
+        Log.d(TAG, "");
+        Log.d(TAG, "BeanEvent---------");
+        for (int i = 0; i < game.getBeansInThisTurn().size(); i++) {
+            Log.d(TAG, "Bean:" + game.getBeansInThisTurn().get(i));
+        }
+        Log.d(TAG, "");
+        Log.d(TAG, "StormEvent-------");
+        for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
+            Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
+        }
+        Log.d(TAG, "*^*^*^*^*^*^LOG*^*^*^*^*^*^");
+
+
         if ((game.getCurrentTurn() % 10) != 0)
             lightTurn();
 
