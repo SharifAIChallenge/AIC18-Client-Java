@@ -20,8 +20,23 @@ public class Map {
         this.cells = cells;
     }
 
-    public Cell[][] getCells() {
+    public Cell[][] getCellsGrid() {
         return cells;
+    }
+
+    public Cell getCell(int x,int y){
+        return this.cells[y][x];
+    }
+
+    public ArrayList<Cell> getCellsList(){
+        ArrayList<Cell> cellsList=new ArrayList<>();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                cellsList.add(this.cells[i][j]);
+            }
+        }
+        return cellsList;
     }
 
     public int getWidth() {

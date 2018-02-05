@@ -230,7 +230,7 @@ public class Game implements World {
                 lightUnit.setHealth(health);
                 lightUnit.setPath(paths.get(pid));
 
-                Cell tmpCell = myAttackMap.getCells()[y][x];
+                Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(lightUnit);
 
@@ -242,7 +242,7 @@ public class Game implements World {
                 heavyUnit.setHealth(health);
                 heavyUnit.setPath(paths.get(pid));
 
-                Cell tmpCell = myAttackMap.getCells()[y][x];
+                Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(heavyUnit);
                 Log.d(TAG, heavyUnit.toString());
@@ -265,7 +265,7 @@ public class Game implements World {
 
                 LightUnit lightUnit = new LightUnit(x, y, Owner.ENEMY, lvl, uid);
 
-                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                Cell tmpCell = myDefenceMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(lightUnit);
 
@@ -275,7 +275,7 @@ public class Game implements World {
 
                 HeavyUnit heavyUnit = new HeavyUnit(x, y, Owner.ENEMY, lvl, uid);
 
-                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                Cell tmpCell = myDefenceMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
                     ((RoadCell) tmpCell).getUnits().add(heavyUnit);
                 Log.d(TAG, heavyUnit.toString());
@@ -297,7 +297,7 @@ public class Game implements World {
             if (tmpMyTower.get(1).getAsString().equals("a")) {
 
                 ArcherTower archerTower = new ArcherTower(x, y, Owner.ME, lvl, tid);
-                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                Cell tmpCell = myDefenceMap.getCellsGrid()[y][x];
 
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(archerTower);
@@ -307,7 +307,7 @@ public class Game implements World {
             } else if (tmpMyTower.get(1).getAsString().equals("c")) {
 
                 CannonTower canonTower = new CannonTower(x, y, Owner.ME, lvl, tid);
-                Cell tmpCell = myDefenceMap.getCells()[y][x];
+                Cell tmpCell = myDefenceMap.getCellsGrid()[y][x];
 
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(canonTower);
@@ -331,7 +331,7 @@ public class Game implements World {
             if (tmpEnemyTower.get(1).getAsString().equals("a")) {
 
                 ArcherTower archerTower = new ArcherTower(x, y, Owner.ENEMY, lvl, tid);
-                Cell tmpCell = myAttackMap.getCells()[y][x];
+                Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
 
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(archerTower);
@@ -341,7 +341,7 @@ public class Game implements World {
             } else if (tmpEnemyTower.get(1).getAsString().equals("c")) {
 
                 CannonTower canonTower = new CannonTower(x, y, Owner.ENEMY, lvl, tid);
-                Cell tmpCell = myAttackMap.getCells()[y][x];
+                Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
 
                 if (tmpCell instanceof GrassCell) {
                     ((GrassCell) tmpCell).setTower(canonTower);
@@ -429,10 +429,10 @@ public class Game implements World {
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
             if (!isMymap) {
                 beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
-                getMyAttackMap().getCells()[y][x] = new BlockCell(x, y);
+                getMyAttackMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             } else {
                 beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
-                getMyDefenceMap().getCells()[y][x] = new BlockCell(x, y);
+                getMyDefenceMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             }
         }
 
@@ -513,7 +513,7 @@ public class Game implements World {
 
         for (int i = 0; i < myAttackMap.getHeight(); i++) {
             for (int j = 0; j < myAttackMap.getWidth(); j++) {
-                Cell tmp = myAttackMap.getCells()[i][j];
+                Cell tmp = myAttackMap.getCellsGrid()[i][j];
                 if (tmp instanceof RoadCell) {
                     for (int k = 0; k < ((RoadCell) tmp).getUnits().size(); k++) {
                         if (((RoadCell) tmp).getUnits().get(k).getOwner() == Owner.ME) {
@@ -533,7 +533,7 @@ public class Game implements World {
 
         for (int i = 0; i < myDefenceMap.getHeight(); i++) {
             for (int j = 0; j < myDefenceMap.getWidth(); j++) {
-                Cell tmp = myDefenceMap.getCells()[i][j];
+                Cell tmp = myDefenceMap.getCellsGrid()[i][j];
                 if (tmp instanceof RoadCell) {
                     for (int k = 0; k < ((RoadCell) tmp).getUnits().size(); k++) {
                         if (((RoadCell) tmp).getUnits().get(k).getOwner() == Owner.ENEMY) {
@@ -552,7 +552,7 @@ public class Game implements World {
 
         for (int i = 0; i < myDefenceMap.getHeight(); i++) {
             for (int j = 0; j < myDefenceMap.getWidth(); j++) {
-                Cell tmp = myDefenceMap.getCells()[i][j];
+                Cell tmp = myDefenceMap.getCellsGrid()[i][j];
                 if (tmp instanceof GrassCell) {
                     try {
                         if (((GrassCell) tmp).getTower().getOwner() == Owner.ME) {
@@ -573,7 +573,7 @@ public class Game implements World {
 
         for (int i = 0; i < myAttackMap.getHeight(); i++) {
             for (int j = 0; j < myAttackMap.getWidth(); j++) {
-                Cell tmp = myAttackMap.getCells()[i][j];
+                Cell tmp = myAttackMap.getCellsGrid()[i][j];
                 if (tmp instanceof GrassCell) {
                     try {
                         if (((GrassCell) tmp).getTower().getOwner() == Owner.ENEMY) {
@@ -636,22 +636,22 @@ public class Game implements World {
                 ArrayList<Cell> adjnct = new ArrayList<>();
 
                 try {
-                    adjnct.add(myDefenceMap.getCells()[y - 1][x]);
+                    adjnct.add(myDefenceMap.getCellsGrid()[y - 1][x]);
                 } catch (Exception e) {
                 }
 
                 try {
-                    adjnct.add(myDefenceMap.getCells()[y + 1][x]);
+                    adjnct.add(myDefenceMap.getCellsGrid()[y + 1][x]);
                 } catch (Exception e) {
                 }
 
                 try {
-                    adjnct.add(myDefenceMap.getCells()[y][x + 1]);
+                    adjnct.add(myDefenceMap.getCellsGrid()[y][x + 1]);
                 } catch (Exception e) {
                 }
 
                 try {
-                    adjnct.add(myDefenceMap.getCells()[y][x - 1]);
+                    adjnct.add(myDefenceMap.getCellsGrid()[y][x - 1]);
                 } catch (Exception e) {
                 }
 
