@@ -121,7 +121,7 @@ public class Controller {
         game.setCurrentTurn(game.getCurrentTurn() + 1);
         game.handleTurnMessage(msg);
 
-        Log.d(TAG, "*^*^*^*^*^*^LOG*^*^*^*^*^*^");
+        Log.d(TAG, "*^*^*^*^*^*^LOG-START*^*^*^*^*^*^");
         Log.d(TAG, "DeadUnits---------");
         for (int i = 0; i < game.getDeadUnitsInThisTurn().size(); i++) {
             Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
@@ -146,7 +146,7 @@ public class Controller {
         for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
             Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
         }
-        Log.d(TAG, "*^*^*^*^*^*^LOG*^*^*^*^*^*^");
+        Log.d(TAG, "*^*^*^*^*^*^LOG-END*^*^*^*^*^*^");
 
 
         if ((game.getCurrentTurn() % 10) != 0)

@@ -37,7 +37,7 @@ public class Unit extends Entity {
         return 0;
     }
 
-    public int getBount(){return 0;}
+    public int getBounty(){return 0;}
 
     public int getDamage() {
         return 0;
@@ -66,8 +66,8 @@ public class Unit extends Entity {
 
     @Override
     public String toString() {
-        return "Unit:: "+"health:"+health+" price:"+getPrice(this.level)+" damage:"+getDamage()
+        return "Unit:: "+"health:"+health+" price:"+getPrice()+" damage:"+getDamage()
                 +" moveSpeed:"+ getMoveSpeed()+" visionRange:"+ getVisionRange()
-                +" Income:"+getIncome()+" bounty:"+getBounty(this.level)+super.toString();
+                +" Income:"+getIncome()+" bounty:"+getBounty()+super.toString();
     }
 }

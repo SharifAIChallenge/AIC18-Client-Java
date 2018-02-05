@@ -42,8 +42,8 @@ public class Tower extends Entity {
 
     @Override
     public String toString() {
-        return "Tower:: "+"level:"+level+" damage:"+getDamage(this.level)+
-                " attack range:"+getAttackRange(this.level)+
+        return "Tower:: "+"level:"+level+" damage:"+getDamage()+
+                " attack range:"+getAttackRange()+
                 " attack_speed:"+getAttackSpeed()+ super.toString();
     }
 }
