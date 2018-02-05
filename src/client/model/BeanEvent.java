@@ -5,8 +5,8 @@ package client.model;
  */
 public class BeanEvent extends GameEvent {
 
-    public BeanEvent(Owner owner, Point point) {
-        super(owner, point);
+    public BeanEvent(Owner owner, Point location) {
+        super(owner, location);
     }
 
     @Override

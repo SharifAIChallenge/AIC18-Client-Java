@@ -29,14 +29,18 @@ public class HeavyUnit extends Unit {
         return PRICE_INCREASE * (level - 1) + INITIAL_PRICE;
     }
 
-    public int getPrice(){return this.getPrice(this.getLevel());}
+    public int getPrice() {
+        return this.getPrice(this.getLevel());
+    }
 
     public int getBounty(int level) {
 
         return INITIAL_BOUNTY + BOUNTY_INCREASE * (level - 1);
     }
 
-    public int getBounty(){return this.getBounty(this.getLevel());}
+    public int getBounty() {
+        return this.getBounty(this.getLevel());
+    }
 
     public int getDamage() {
         return DAMAGE;

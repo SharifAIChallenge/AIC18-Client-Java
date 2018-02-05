@@ -17,8 +17,8 @@ public class LightUnit extends Unit {
     public static int LEVEL_UP_THRESHOLD;
     public static int ADDED_INCOME;
 
-    public LightUnit(int x, int y, Owner owner, int level,int id) {
-        super(x, y, owner, level,id);
+    public LightUnit(int x, int y, Owner owner, int level, int id) {
+        super(x, y, owner, level, id);
     }
 
     public int getMoveSpeed() {
@@ -29,13 +29,17 @@ public class LightUnit extends Unit {
         return PRICE_INCREASE * (level - 1) + INITIAL_PRICE;
     }
 
-    public int getPrice(){return this.getPrice(this.getLevel());}
+    public int getPrice() {
+        return this.getPrice(this.getLevel());
+    }
 
     public int getBounty(int level) {
         return INITIAL_BOUNTY + BOUNTY_INCREASE * (level - 1);
     }
 
-    public int getBounty(){return this.getBounty(this.getLevel());}
+    public int getBounty() {
+        return this.getBounty(this.getLevel());
+    }
 
     public int getDamage() {
         return DAMAGE;
@@ -45,12 +49,12 @@ public class LightUnit extends Unit {
         return VISION_RANGE;
     }
 
-    public int getIncome(){
+    public int getIncome() {
         return ADDED_INCOME;
     }
 
     @Override
     public String toString() {
-        return "Light"+super.toString();
+        return "Light" + super.toString();
     }
 }

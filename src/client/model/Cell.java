@@ -5,14 +5,14 @@ package client.model;
  */
 public class Cell {
 
-    private Point point;
+    private Point location;
 
     public Cell(int x, int y) {
-        point = new Point(x, y);
+        location = new Point(x, y);
 
     }
     public Point getPoint() {
-        return point;
+        return location;
     }
 
 }

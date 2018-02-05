@@ -5,8 +5,8 @@ package client.model;
  */
 public class StormEvent extends GameEvent {
 
-    public StormEvent(Owner owner, Point point) {
-        super(owner, point);
+    public StormEvent(Owner owner, Point location) {
+        super(owner, location);
     }
 
     @Override

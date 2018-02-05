@@ -22,7 +22,9 @@ public class ArcherTower extends Tower {
         return (int) (INITIAL_DAMAGE * Math.pow(DAMAGE_COEFF, level - 1));
     }
 
-    public int getDamage(){return this.getDamage(this.getLevel());}
+    public int getDamage() {
+        return this.getDamage(this.getLevel());
+    }
 
     public int getPrice(int level) {
 
@@ -32,7 +34,7 @@ public class ArcherTower extends Tower {
             return (int) (INITIAL_PRICE + INITIAL_LEVEL_UP_PRICE * Math.pow(PRICE_COEFF, level - 1));
     }
 
-    public int getPrice(){
+    public int getPrice() {
         return this.getPrice(this.getLevel());
     }
 
@@ -40,7 +42,9 @@ public class ArcherTower extends Tower {
         return ATTACK_RANGE + ATTACK_RANGE_SUM * (level - 1);
     }
 
-    public int getAttackRange(){return this.getAttackRange(this.getLevel());}
+    public int getAttackRange() {
+        return this.getAttackRange(this.getLevel());
+    }
 
     public int getAttackSpeed() {
         return ATTACK_SPEED;

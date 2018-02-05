@@ -8,11 +8,11 @@ import java.awt.*;
 public class GameEvent {
 
     private Owner owner;
-    private Point point;
+    private Point location;
 
-    public GameEvent(Owner owner, Point point) {
+    public GameEvent(Owner owner, Point location) {
         this.owner = owner;
-        this.point = point;
+        this.location = location;
     }
 
     public Owner getOwner() {
@@ -24,11 +24,11 @@ public class GameEvent {
     }
 
     public Point getPoint() {
-        return point;
+        return location;
     }
 
     @Override
     public String toString() {
-        return " Event @ x:" + point.getX() + " y:" + point.getY() + " Owner:" + owner;
+        return " Event @ x:" + location.getX() + " y:" + location.getY() + " Owner:" + owner;
     }
 }

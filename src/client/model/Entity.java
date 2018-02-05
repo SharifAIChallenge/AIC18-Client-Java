@@ -5,20 +5,20 @@ package client.model;
  */
 public class Entity {
 
-    private Point point;
+    private Point location;
     private Owner owner;
     private int id;
 
     public Entity(int x, int y, Owner owner, int id) {
 
-        point = new Point(x, y);
+        location = new Point(x, y);
         this.owner = owner;
         this.id = id;
 
     }
 
     public Point getPoint() {
-        return point;
+        return location;
     }
 
     public Owner getOwner() {
@@ -35,7 +35,7 @@ public class Entity {
 
     @Override
     public String toString() {
-        return " @ x:" + point.getX() + " y:" + point.getY() +
+        return " @ x:" + location.getX() + " y:" + location.getY() +
                 " Owner: " + owner.toString() + " Id:" + id;
     }
 }

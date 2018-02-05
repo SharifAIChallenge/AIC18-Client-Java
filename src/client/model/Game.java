@@ -195,7 +195,7 @@ public class Game implements World {
 
     public void handleTurnMessage(Message msg) {
 
-        Log.d(TAG, "--------------------------------------------" + "turn " + currentTurn + " started--------------------------------------------");
+        Log.d(TAG, "-------------------------------------------- " + "parsing turn " + currentTurn + " started--------------------------------------------");
 
         ArrayList<Unit> unitsBeforeUpdate = new ArrayList<>();
         ArrayList<Tower> towersBeforeUpdate = new ArrayList<>();
@@ -362,13 +362,13 @@ public class Game implements World {
         int myRemStorms = myDetails.get(4).getAsInt();
 
         players[0] = new Player(myMoney, myIncome, myHealth, myRemBeans, myRemStorms);
-        Log.d(TAG, "0" + players[0]);
+        Log.d(TAG, "Me" + players[0]);
         int enemyHealth = enemyDetails.get(0).getAsInt();
         int enemyRemBeans = enemyDetails.get(1).getAsInt();
         int enemyRemStorms = enemyDetails.get(2).getAsInt();
 
         players[1] = new Player(0, 0, enemyHealth, enemyRemBeans, enemyRemStorms);
-        Log.d(TAG, "1" + players[1]);
+        Log.d(TAG, "Enemy" + players[1]);
 
         Log.d(TAG, "Events:");
         JsonObject eventsObject = msg.args.get(0).getAsJsonObject().get("events").getAsJsonObject();
@@ -378,7 +378,7 @@ public class Game implements World {
         deadUnitsInThisCycle = new ArrayList<>();
         for (int i = 0; i < deadunitsArray.size(); i++) {
             JsonArray tmpDead = deadunitsArray.get(i).getAsJsonArray();
-            Log.d(TAG, "Unit Died-> " + "isMymap:" + tmpDead.get(0).getAsInt() + " - uId:" + tmpDead.get(1).getAsString());//function for this shit.
+            Log.d(TAG, "Unit Died-> " + "isMymap:" + tmpDead.get(0).getAsBoolean() + " - uId:" + tmpDead.get(1).getAsString());//function for this shit.
 
             for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
                 if (unitsBeforeUpdate.get(j).getId() == tmpDead.get(1).getAsInt()) {
@@ -391,7 +391,7 @@ public class Game implements World {
         passedUnitsInThisCycle = new ArrayList<>();
         for (int i = 0; i < endOfPathArray.size(); i++) {
             JsonArray tmpEnd = endOfPathArray.get(i).getAsJsonArray();
-            Log.d(TAG, "Unit reached End Of Path-> " + "isMymap:" + tmpEnd.get(0).getAsInt() + " - uId:" + tmpEnd.get(1).getAsString());//function for this shit
+            Log.d(TAG, "Unit reached End Of Path-> " + "isMymap:" + tmpEnd.get(0).getAsBoolean() + " - uId:" + tmpEnd.get(1).getAsString());//function for this shit
 
             for (int j = 0; j < unitsBeforeUpdate.size(); j++) {
                 if (unitsBeforeUpdate.get(j).getId() == tmpEnd.get(1).getAsInt()) {
@@ -406,7 +406,7 @@ public class Game implements World {
             JsonArray tmpTower = desTowersArray.get(i).getAsJsonArray();
 
             int tid = tmpTower.get(1).getAsInt();
-            int isMymap = tmpTower.get(0).getAsInt();
+            boolean isMymap = tmpTower.get(0).getAsBoolean();
 
             Log.d(TAG, "Tower destroyed  -> " + "isMymap:" + isMymap + " - tId:" + tid);
 
@@ -424,10 +424,10 @@ public class Game implements World {
             int x = tmpBean.get(1).getAsJsonObject().get("x").getAsInt();
             int y = tmpBean.get(1).getAsJsonObject().get("y").getAsInt();
 
-            int isMymap = tmpBean.get(0).getAsInt();
+            boolean isMymap = tmpBean.get(0).getAsBoolean();
 
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
-            if (isMymap == 0) {
+            if (!isMymap) {
                 beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
                 getMyAttackMap().getCells()[y][x] = new BlockCell(x, y);
             } else {
@@ -443,14 +443,14 @@ public class Game implements World {
 
             int x = tmpstorm.get(1).getAsJsonObject().get("x").getAsInt();
             int y = tmpstorm.get(1).getAsJsonObject().get("y").getAsInt();
-            int isMymap = tmpstorm.get(0).getAsInt();
+            boolean isMymap = tmpstorm.get(0).getAsBoolean();
 
-            if (isMymap == 0)
+            if (!isMymap)
                 stormsInThisCycle.add(new StormEvent(Owner.ENEMY, new Point(x, y)));
             else stormsInThisCycle.add(new StormEvent(Owner.ME, new Point(x, y)));
             Log.d(TAG, "Storm created At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
         }
-        Log.d(TAG, "--------------------------------------------turn " + currentTurn + " finished--------------------------------------------");
+        Log.d(TAG, "-------------------------------------------- parsing turn " + currentTurn + " finished--------------------------------------------");
     }
 
     public void createArcherTower(int lvl, int x, int y) {
@@ -490,7 +490,7 @@ public class Game implements World {
         Event event = new Event("ut", new Object[]{tid});
         sender.accept(new Message(Event.EVENT, event));
 
-        Log.d(TAG, "Request: upgrade tower with tid:" + tid);
+        Log.d(TAG, "Request: upgrade tower with TowerId:" + tid);
     }
 
     public void plantBean(int x, int y) {

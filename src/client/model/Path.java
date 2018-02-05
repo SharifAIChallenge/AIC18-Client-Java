@@ -19,10 +19,10 @@ public class Path {
 
     @Override
     public String toString() {
-        String result="";
+        String result = "Path: ";
 
         for (int i = 0; i < road.size(); i++) {
-            result+="("+road.get(i).getPoint().getX()+","+road.get(i).getPoint().getY()+")"+" ";
+            result += "(" + road.get(i).getPoint().getX() + "," + road.get(i).getPoint().getY() + ")" + " ";
         }
         return result;
     }
