@@ -447,14 +447,14 @@ public class Game implements World {
 
     public void createArcherTower(int lvl, int x, int y) {
 
-        Event event = new Event("ct", new Object[]{"a", lvl, x, y});
+        Event event = new Event("ct", new Object[]{getCurrentTurn(),"a", lvl, x, y});
         sender.accept(new Message(Event.EVENT, event));
         Log.d(TAG, "Request: create ArcherTower @ x:" + x + " y:" + y + " Level:" + lvl);
     }
 
     public void createCannonTower(int lvl, int x, int y) {
 
-        Event event = new Event("ct", new Object[]{"c", lvl, x, y});
+        Event event = new Event("ct", new Object[]{getCurrentTurn(),"c", lvl, x, y});
         sender.accept(new Message(Event.EVENT, event));
         Log.d(TAG, "Request: create CannonTower @ x:" + x + " y:" + y + " Level:" + lvl);
 
@@ -462,7 +462,7 @@ public class Game implements World {
 
     public void createLightUnit(int pathIndex) {
 
-        Event event = new Event("cu", new Object[]{"l", pathIndex});
+        Event event = new Event("cu", new Object[]{getCurrentTurn(),"l", pathIndex});
         sender.accept(new Message(Event.EVENT, event));
 
         Log.d(TAG, "Request: create LightUnit @ path number:" + pathIndex);
@@ -471,7 +471,7 @@ public class Game implements World {
 
     public void createHeavyUnit(int pathIndex) {
 
-        Event event = new Event("cu", new Object[]{"h", pathIndex});
+        Event event = new Event("cu", new Object[]{getCurrentTurn(),"h", pathIndex});
         sender.accept(new Message(Event.EVENT, event));
 
         Log.d(TAG, "Request: create HeavyUnit @ path number:" + pathIndex);
@@ -479,7 +479,7 @@ public class Game implements World {
 
     public void upgradeTower(int tid) {
 
-        Event event = new Event("ut", new Object[]{tid});
+        Event event = new Event("ut", new Object[]{getCurrentTurn(),tid});
         sender.accept(new Message(Event.EVENT, event));
 
         Log.d(TAG, "Request: upgrade tower with TowerId:" + tid);
@@ -487,14 +487,14 @@ public class Game implements World {
 
     public void plantBean(int x, int y) {
 
-        Event event = new Event("b", new Object[]{x, y});
+        Event event = new Event("b", new Object[]{getCurrentTurn(),x, y});
         sender.accept(new Message(Event.EVENT, event));
         Log.d(TAG, "Request: plant bean @ x:" + x + " y:" + y);
     }
 
     public void createStorm(int x, int y) {
 
-        Event event = new Event("s", new Object[]{x, y});
+        Event event = new Event("s", new Object[]{getCurrentTurn(),x, y});
         sender.accept(new Message(Event.EVENT, event));
         Log.d(TAG, "Request: create storm @ x:" + x + " y:" + y);
     }

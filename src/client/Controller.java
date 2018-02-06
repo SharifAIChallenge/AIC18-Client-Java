@@ -5,6 +5,7 @@ import common.model.Event;
 import common.network.data.Message;
 import common.util.Log;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -185,9 +186,6 @@ public class Controller {
             heavyTurn();
         }
 
-        Event event=new Event("end",null);
-        Consumer<Message> sender=network::send;
-        sender.accept(new Message(Event.EVENT, event));
 
     }
 
@@ -205,24 +203,50 @@ public class Controller {
      * Starts {@link AI#simpleTurn} with turn timeout.
      */
     private void lightTurn() {
-        new Thread() {
+        Thread t=new Thread() {
             @Override
             public void run() {
                 ai.simpleTurn(game);
             }
-        }.start();
+        };
+        t.start();
+
+//        try {
+//            t.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//       sendEndMsg();
+
     }
 
     /**
      * Starts {@link AI#complexTurn} with turn timeout.
      */
     private void heavyTurn() {
-        new Thread() {
+        Thread t=new Thread() {
             @Override
             public void run() {
                 ai.complexTurn(game);
             }
-        }.start();
+        };
+
+        t.start();
+//        try {
+//            t.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        sendEndMsg();
+
+    }
+
+    private void sendEndMsg(){
+        Consumer<Message> sender=network::send;
+        Event event=new Event("end", new Object[]{game.getCurrentTurn()});
+        sender.accept(new Message(Event.EVENT, event));
     }
 
 }
