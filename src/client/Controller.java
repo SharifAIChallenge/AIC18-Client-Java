@@ -41,6 +41,8 @@ public class Controller {
     // Terminator. Controller waits for this object to be notified. Then it will be terminated.
     private final Object terminator;
 
+    Consumer<Message> sender;
+
     /**
      * Constructor
      *
@@ -63,7 +65,8 @@ public class Controller {
     public void start() {
         try {
             network = new Network(this::handleMessage);
-            game = new Game(network::send);
+            sender=network::send;
+            game = new Game(sender);
             ai = new AI();
             network.setConnectionData(host, port, token);
             while (!network.isConnected()) {
@@ -216,8 +219,8 @@ public class Controller {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//
-//       sendEndMsg();
+
+       //sendEndMsg();
 
     }
 
@@ -238,13 +241,12 @@ public class Controller {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//
-//        sendEndMsg();
+
+        //sendEndMsg();
 
     }
 
     private void sendEndMsg(){
-        Consumer<Message> sender=network::send;
         Event event=new Event("end", new Object[]{game.getCurrentTurn()});
         sender.accept(new Message(Event.EVENT, event));
     }
