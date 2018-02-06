@@ -19,10 +19,6 @@ public class GameEvent {
         return owner;
     }
 
-    public void setOwner(Owner owner) {
-        this.owner = owner;
-    }
-
     public Point getPoint() {
         return location;
     }

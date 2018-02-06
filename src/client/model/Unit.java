@@ -10,17 +10,11 @@ public class Unit extends Entity {
 
     private Path path;
 
-    public Unit(int x, int y, Owner owner, int level,int id) {
+    public Unit(int x, int y, Owner owner, int level,int id,int health,Path path) {
         super(x, y, owner,id);
         this.level=level;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
+        this.health=health;
+        this.path=path;
     }
 
     public int getMoveSpeed() {
@@ -57,10 +51,6 @@ public class Unit extends Entity {
 
     public int getIncome(){
         return 0;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
     }
 
 

@@ -29,10 +29,6 @@ public class Entity {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return " @ x:" + location.getX() + " y:" + location.getY() +

@@ -11,13 +11,10 @@ public class Map {
     private int width;
     private int height;
 
-    public Map(int width, int height) {
+    public Map(int width, int height, Cell[][] cells) {
         this.width = width;
         this.height = height;
-    }
-
-    public void setCells(Cell[][] cells) {
-        this.cells = cells;
+        this.cells=cells;
     }
 
     public Cell[][] getCellsGrid() {
@@ -56,7 +53,7 @@ public class Map {
                         ((RoadCell) tmpCell).getUnits().remove(k);
                     }
                 else if (tmpCell instanceof GrassCell)
-                    ((GrassCell) tmpCell).setTower(null);
+                    cells[i][j]=new GrassCell(j,i,null);
             }
         }
     }
