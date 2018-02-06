@@ -22,10 +22,6 @@ public class GrassCell extends Cell {
         return tower;
     }
 
-//    public void setTower(Tower tower) {
-//        this.tower = tower;
-//    }
-
     @Override
     public String toString() {
         return "g";

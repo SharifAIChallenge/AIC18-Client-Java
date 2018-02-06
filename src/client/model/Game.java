@@ -1,5 +1,4 @@
 package client.model;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import common.model.Event;

@@ -1,8 +1,11 @@
 package client;
 
 import client.model.Game;
+import common.model.Event;
 import common.network.data.Message;
 import common.util.Log;
+
+import java.util.function.Consumer;
 
 /**
  * Main controller. Controls execution of the program, e.g. checks time limit of
@@ -181,6 +184,10 @@ public class Controller {
             Log.d(TAG,"HeavyTurn Called");
             heavyTurn();
         }
+
+        Event event=new Event("end",null);
+        Consumer<Message> sender=network::send;
+        sender.accept(new Message(Event.EVENT, event));
 
     }
 
