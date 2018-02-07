@@ -214,15 +214,6 @@ public class Controller {
             }
         };
         t.start();
-
-//        try {
-//            t.wait();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//       sendEndMsg();
-
     }
 
     /**
@@ -238,14 +229,6 @@ public class Controller {
             }
         };
         t.start();
-//        try {
-//            t.wait();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
-//        sendEndMsg();
-
     }
 
     private void sendEndMsg(Event event){
