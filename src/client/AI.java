@@ -1,8 +1,11 @@
 package client;
 
 import client.model.*;
+import common.util.Log;
 
 import java.util.Random;
+
+import static common.network.JsonSocket.TAG;
 
 /**
  * AI class.
@@ -20,27 +23,33 @@ public class AI {
 
     void simpleTurn(World game) {
 
-        if(rnd.nextInt()%3==2){
-            game.createArcherTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
-
-        }else if(rnd.nextInt()%3==1){
-            game.createCannonTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
-
-        }else if(rnd.nextInt()%3==0){
-            game.createLightUnit(rnd.nextInt(game.getPaths().size()));
-        }
+        Log.d(TAG,"lightTurn Called"+" Turn:"+game.getCurrentTurn());
+        game.createLightUnit(game.getCurrentTurn());
+//        int t=rnd.nextInt();
+//        if(t%3==2){
+//            game.createArcherTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+//
+//        }else if(t%3==1){
+//            game.createHeavyUnit(rnd.nextInt(game.getPaths().size()));
+//
+//        }else if(t%3==0){
+//            game.createLightUnit(rnd.nextInt(game.getPaths().size()));
+//        }
     }
 
     void complexTurn(World game) {
 
-        if(rnd.nextInt()%3==2){
-            game.createStorm(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
-        }else if(rnd.nextInt()%3==1){
-            game.plantBean(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
-
-        }else if(rnd.nextInt()%3==0){
-            game.createHeavyUnit(rnd.nextInt(game.getPaths().size()));
-
-        }
+        Log.d(TAG,"HeavyTurn Called"+" Turn:"+game.getCurrentTurn());
+        game.createLightUnit(game.getCurrentTurn());
+//        int t=rnd.nextInt();
+//        if(t%3==2){
+//            game.createStorm(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+//        }else if(t%3==1){
+//            game.plantBean(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+//
+//        }else if(t%3==0){
+//            game.createCannonTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+//
+//        }
     }
 }

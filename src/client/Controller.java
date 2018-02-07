@@ -43,6 +43,8 @@ public class Controller {
 
     Consumer<Message> sender;
 
+    Event event;
+
     /**
      * Constructor
      *
@@ -125,67 +127,65 @@ public class Controller {
      * @param msg turn message
      */
     private void handleTurnMessage(Message msg) {
+
         game.setCurrentTurn(game.getCurrentTurn() + 1);
+        event=new Event("end", new Object[]{game.getCurrentTurn()});
         game.handleTurnMessage(msg);
 
-        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-START----------------");
-        Log.d(TAG,"MyUnits");
-        for (int i = 0; i < game.getMyUnits().size(); i++) {
-            Log.d(TAG,"Alive:"+game.getMyUnits().get(i));
-        }
-        Log.d(TAG,"");
-        Log.d(TAG,"EnemyUnits");
-        for (int i = 0; i < game.getEnemyUnits().size(); i++) {
-            Log.d(TAG,"Alive:"+game.getEnemyUnits().get(i));
-        }
-        Log.d(TAG,"");
-        Log.d(TAG,"MyTowers");
-        for (int i = 0; i < game.getMyTowers().size(); i++) {
-            Log.d(TAG,"Working:"+game.getMyTowers().get(i));
-        }
-        Log.d(TAG,"");
-        Log.d(TAG,"EnemyTowers");
-        for (int i = 0; i < game.getVisibleEnemyTowers().size(); i++) {
-            Log.d(TAG,"Working:"+game.getVisibleEnemyTowers().get(i));
-        }
-        Log.d(TAG,"");
-        Log.d(TAG, "DeadUnits---------");
-        for (int i = 0; i < game.getDeadUnitsInThisTurn().size(); i++) {
-            Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
-        }
-        Log.d(TAG, "");
-        Log.d(TAG, "DestroyedTowers-------");
-        for (int i = 0; i < game.getDestroyedTowersInThisTurn().size(); i++) {
-            Log.d(TAG, "Destroyed:" + game.getDestroyedTowersInThisTurn().get(i));
-        }
-        Log.d(TAG, "");
-        Log.d(TAG, "PassedUnits--------");
-        for (int i = 0; i < game.getPassedUnitsInThisTurn().size(); i++) {
-            Log.d(TAG, "Passed:" + game.getPassedUnitsInThisTurn().get(i));
-        }
-        Log.d(TAG, "");
-        Log.d(TAG, "BeanEvents---------");
-        for (int i = 0; i < game.getBeansInThisTurn().size(); i++) {
-            Log.d(TAG, "Bean:" + game.getBeansInThisTurn().get(i));
-        }
-        Log.d(TAG, "");
-        Log.d(TAG, "StormEvents-------");
-        for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
-            Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
-        }
-        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-END----------------");
+//        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-START----------------");
+//        Log.d(TAG,"MyUnits");
+//        for (int i = 0; i < game.getMyUnits().size(); i++) {
+//            Log.d(TAG,"Alive:"+game.getMyUnits().get(i));
+//        }
+//        Log.d(TAG,"");
+//        Log.d(TAG,"EnemyUnits");
+//        for (int i = 0; i < game.getEnemyUnits().size(); i++) {
+//            Log.d(TAG,"Alive:"+game.getEnemyUnits().get(i));
+//        }
+//        Log.d(TAG,"");
+//        Log.d(TAG,"MyTowers");
+//        for (int i = 0; i < game.getMyTowers().size(); i++) {
+//            Log.d(TAG,"Working:"+game.getMyTowers().get(i));
+//        }
+//        Log.d(TAG,"");
+//        Log.d(TAG,"EnemyTowers");
+//        for (int i = 0; i < game.getVisibleEnemyTowers().size(); i++) {
+//            Log.d(TAG,"Working:"+game.getVisibleEnemyTowers().get(i));
+//        }
+//        Log.d(TAG,"");
+//        Log.d(TAG, "DeadUnits---------");
+//        for (int i = 0; i < game.getDeadUnitsInThisTurn().size(); i++) {
+//            Log.d(TAG, "Died:" + game.getDeadUnitsInThisTurn().get(i));
+//        }
+//        Log.d(TAG, "");
+//        Log.d(TAG, "DestroyedTowers-------");
+//        for (int i = 0; i < game.getDestroyedTowersInThisTurn().size(); i++) {
+//            Log.d(TAG, "Destroyed:" + game.getDestroyedTowersInThisTurn().get(i));
+//        }
+//        Log.d(TAG, "");
+//        Log.d(TAG, "PassedUnits--------");
+//        for (int i = 0; i < game.getPassedUnitsInThisTurn().size(); i++) {
+//            Log.d(TAG, "Passed:" + game.getPassedUnitsInThisTurn().get(i));
+//        }
+//        Log.d(TAG, "");
+//        Log.d(TAG, "BeanEvents---------");
+//        for (int i = 0; i < game.getBeansInThisTurn().size(); i++) {
+//            Log.d(TAG, "Bean:" + game.getBeansInThisTurn().get(i));
+//        }
+//        Log.d(TAG, "");
+//        Log.d(TAG, "StormEvents-------");
+//        for (int i = 0; i < game.getStormsInThisTurn().size(); i++) {
+//            Log.d(TAG, "Bean:" + game.getStormsInThisTurn().get(i));
+//        }
+//        Log.d(TAG, "----------------AFTER-TURN-MSG-LOG-END----------------");
+//
 
-
-        if ((game.getCurrentTurn() % 10) != 0){
-            Log.d(TAG,"");
-            Log.d(TAG,"lightTurn Called");
+        if ((game.getCurrentTurn() % 10) != 0 || game.getCurrentTurn() == 0){
             lightTurn();
         }
 
 
         else if (game.getCurrentTurn() % 10 == 0 && game.getCurrentTurn() != 0){
-            Log.d(TAG,"");
-            Log.d(TAG,"HeavyTurn Called");
             heavyTurn();
         }
 
@@ -210,17 +210,18 @@ public class Controller {
             @Override
             public void run() {
                 ai.simpleTurn(game);
+                sendEndMsg(event);
             }
         };
         t.start();
 
 //        try {
-//            t.join();
+//            t.wait();
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-
-       //sendEndMsg();
+//
+//       sendEndMsg();
 
     }
 
@@ -232,22 +233,22 @@ public class Controller {
             @Override
             public void run() {
                 ai.complexTurn(game);
+                sendEndMsg(event);
+
             }
         };
-
         t.start();
 //        try {
-//            t.join();
+//            t.wait();
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
 
-        //sendEndMsg();
+//        sendEndMsg();
 
     }
 
-    private void sendEndMsg(){
-        Event event=new Event("end", new Object[]{game.getCurrentTurn()});
+    private void sendEndMsg(Event event){
         sender.accept(new Message(Event.EVENT, event));
     }
 
