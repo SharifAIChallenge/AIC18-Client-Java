@@ -15,7 +15,7 @@ public class Main {
     private static final boolean GLOBAL_VERBOSE_FLAG = true;
 
     private static final String[] argNames = {"AICHostIP", "AICHostPort", "AICToken", "AICRetryDelay"};
-    private static final String[] argDefaults = {"172.20.10.14", "7099", "00000000000000000000000000000000", "1000"};
+    private static final String[] argDefaults = {"localhost", "7099", "00000000000000000000000000000000", "1000"};
 
     public static void main(String[] args) {
         try {
