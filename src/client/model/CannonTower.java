@@ -5,14 +5,14 @@ package client.model;
  */
 public class CannonTower extends Tower {
 
-    static int INITIAL_PRICE;
-    static int INITIAL_LEVEL_UP_PRICE;
-    static double PRICE_COEFF;
-    static int INITIAL_DAMAGE;
-    static double DAMAGE_COEFF;
-    static int ATTACK_SPEED;
-    static int ATTACK_RANGE;
-    static int ATTACK_RANGE_SUM;
+    public static int INITIAL_PRICE;
+    public static int INITIAL_LEVEL_UP_PRICE;
+    public static double PRICE_COEFF;
+    public static int INITIAL_DAMAGE;
+    public static double DAMAGE_COEFF;
+    public static int ATTACK_SPEED;
+    public static int ATTACK_RANGE;
+    public static int ATTACK_RANGE_SUM;
 
     public CannonTower(int x, int y, Owner owner, int level, int id) {
         super(x, y, owner, level, id);
