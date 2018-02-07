@@ -664,6 +664,16 @@ public class Game implements World {
     }
 
     @Override
+    public ArrayList<Path> getAttackMapPaths() {
+        return paths;
+    }
+
+    @Override
+    public ArrayList<Path> getDefenceMapPaths() {
+        return paths;
+    }
+
+    @Override
     public ArrayList<BeanEvent> getBeansInThisTurn() {
         return beansInThisCycle;
     }

@@ -19,6 +19,10 @@ public interface World {
 
     Map getMyAttackMap();
 
+    ArrayList<Path> getAttackMapPaths();
+
+    ArrayList<Path> getDefenceMapPaths();
+
     Map getMyDefenceMap();
 
     Player getEnemyInformation();
