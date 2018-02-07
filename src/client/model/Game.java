@@ -15,7 +15,8 @@ public class Game implements World {
     private Map myAttackMap;
     private Map myDefenceMap;
     private Player[] players;
-    private ArrayList<Path> paths;
+    private ArrayList<Path> myDefenceMapPaths;
+    private ArrayList<Path> myAttackMapPaths;
     private int currentTurn;
 
     public static int MAX_TURNS_IN_GAME;
@@ -84,16 +85,16 @@ public class Game implements World {
 
 
         Log.d(TAG, "Initializing Paths");
-        paths = new ArrayList<Path>();
-        JsonArray pathArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("paths");
+        myDefenceMapPaths = new ArrayList<Path>();
+        JsonArray defancePathArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("paths");
 
-        for (int i = 0; i < pathArray.size(); i++) {
+        for (int i = 0; i < defancePathArray.size(); i++) {
 
-            JsonObject tmpPath = pathArray.get(i).getAsJsonObject();
+            JsonObject tmpPath = defancePathArray.get(i).getAsJsonObject();
 
             int lenght = tmpPath.get("len").getAsInt();
 
-            ArrayList<RoadCell> tmpRoadCells = new ArrayList<RoadCell>();
+            ArrayList<RoadCell> tmpRoadCells = new ArrayList<>();
 
             JsonArray tmpCells = tmpPath.getAsJsonArray("cells");
 
@@ -102,16 +103,43 @@ public class Game implements World {
                 int x = tmpCells.get(j).getAsJsonObject().get("x").getAsInt();
                 int y = tmpCells.get(j).getAsJsonObject().get("y").getAsInt();
 
-                tmpRoadCells.add(new RoadCell(x, y));
+                tmpRoadCells.add((RoadCell) myDefenceMap.getCell(x,y));
             }
 
-            this.paths.add(new Path(tmpRoadCells));
+            this.myDefenceMapPaths.add(new Path(tmpRoadCells));
         }
 
-        for (int i = 0; i < paths.size(); i++) {
-            Log.d(TAG, i + ":" + paths.get(i));
+        for (int i = 0; i < myDefenceMapPaths.size(); i++) {
+            Log.d(TAG, i + ":" + myDefenceMapPaths.get(i));
         }
 
+        myAttackMapPaths = new ArrayList<Path>();
+        JsonArray attackPathArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("paths");
+
+        for (int i = 0; i < attackPathArray.size(); i++) {
+
+            JsonObject tmpPath = attackPathArray.get(i).getAsJsonObject();
+
+            int lenght = tmpPath.get("len").getAsInt();
+
+            ArrayList<RoadCell> tmpRoadCells = new ArrayList<>();
+
+            JsonArray tmpCells = tmpPath.getAsJsonArray("cells");
+
+            for (int j = 0; j < tmpCells.size(); j++) {
+
+                int x = tmpCells.get(j).getAsJsonObject().get("x").getAsInt();
+                int y = tmpCells.get(j).getAsJsonObject().get("y").getAsInt();
+
+                tmpRoadCells.add((RoadCell) myAttackMap.getCell(x,y));
+            }
+
+            this.myAttackMapPaths.add(new Path(tmpRoadCells));
+        }
+
+        for (int i = 0; i < myAttackMapPaths.size(); i++) {
+            Log.d(TAG, i + ":" + myAttackMapPaths.get(i));
+        }
         //init params
         Log.d(TAG, "Initializing Parameters");
         JsonArray paramsArray = msg.args.get(0).getAsJsonObject().getAsJsonArray("params");
@@ -222,7 +250,7 @@ public class Game implements World {
 
             if (tmpUnit.get(1).getAsString().equals("l")) {
 
-                LightUnit lightUnit = new LightUnit(x, y, Owner.ME, lvl, uid,health,paths.get(pid));
+                LightUnit lightUnit = new LightUnit(x, y, Owner.ME, lvl, uid,health,myAttackMapPaths.get(pid));
 
                 Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
@@ -232,7 +260,7 @@ public class Game implements World {
 
             } else if (tmpUnit.get(1).getAsString().equals("h")) {
 
-                HeavyUnit heavyUnit = new HeavyUnit(x, y, Owner.ME, lvl, uid,health,paths.get(pid));
+                HeavyUnit heavyUnit = new HeavyUnit(x, y, Owner.ME, lvl, uid,health,myAttackMapPaths.get(pid));
 
                 Cell tmpCell = myAttackMap.getCellsGrid()[y][x];
                 if (tmpCell instanceof RoadCell)
@@ -421,10 +449,10 @@ public class Game implements World {
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
             if (!isMymap) {
                 beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
-                getMyAttackMap().getCellsGrid()[y][x] = new BlockCell(x, y);
+                getAttackMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             } else {
                 beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
-                getMyDefenceMap().getCellsGrid()[y][x] = new BlockCell(x, y);
+                getDefenceMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             }
         }
 
@@ -580,9 +608,6 @@ public class Game implements World {
         return enemyTowers;
     }
 
-    public ArrayList<Path> getPaths() {
-        return paths;
-    }
 
     public Player getEnemyInformation() {
         return players[1];
@@ -592,11 +617,11 @@ public class Game implements World {
         return players[0];
     }
 
-    public Map getMyAttackMap() {
+    public Map getAttackMap() {
         return myAttackMap;
     }
 
-    public Map getMyDefenceMap() {
+    public Map getDefenceMap() {
         return myDefenceMap;
     }
 
@@ -665,12 +690,12 @@ public class Game implements World {
 
     @Override
     public ArrayList<Path> getAttackMapPaths() {
-        return paths;
+        return myAttackMapPaths;
     }
 
     @Override
     public ArrayList<Path> getDefenceMapPaths() {
-        return paths;
+        return myDefenceMapPaths;
     }
 
     @Override

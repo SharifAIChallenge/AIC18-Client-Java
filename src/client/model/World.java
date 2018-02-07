@@ -15,15 +15,13 @@ public interface World {
 
     ArrayList<Tower> getVisibleEnemyTowers();
 
-    ArrayList<Path> getPaths();
-
-    Map getMyAttackMap();
+    Map getAttackMap();
 
     ArrayList<Path> getAttackMapPaths();
 
     ArrayList<Path> getDefenceMapPaths();
 
-    Map getMyDefenceMap();
+    Map getDefenceMap();
 
     Player getEnemyInformation();
 

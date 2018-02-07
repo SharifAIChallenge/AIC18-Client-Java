@@ -27,13 +27,13 @@ public class AI {
 
         int t=rnd.nextInt();
         if(t%3==2){
-            game.createArcherTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+            game.createArcherTower(rnd.nextInt(4),rnd.nextInt(game.getDefenceMap().getWidth()),rnd.nextInt(game.getDefenceMap().getHeight()));
 
         }else if(t%3==1){
-            game.createHeavyUnit(rnd.nextInt(game.getPaths().size()));
+            game.createHeavyUnit(rnd.nextInt(game.getDefenceMapPaths().size()));
 
         }else if(t%3==0){
-            game.createLightUnit(rnd.nextInt(game.getPaths().size()));
+            game.createLightUnit(rnd.nextInt(game.getAttackMapPaths().size()));
         }
     }
 
@@ -43,12 +43,12 @@ public class AI {
 
         int t=rnd.nextInt();
         if(t%3==2){
-            game.createStorm(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+            game.createStorm(rnd.nextInt(game.getDefenceMap().getWidth()),rnd.nextInt(game.getDefenceMap().getHeight()));
         }else if(t%3==1){
-            game.plantBean(rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+            game.plantBean(rnd.nextInt(game.getDefenceMap().getWidth()),rnd.nextInt(game.getDefenceMap().getHeight()));
 
         }else if(t%3==0){
-            game.createCannonTower(rnd.nextInt(4),rnd.nextInt(game.getMyDefenceMap().getWidth()),rnd.nextInt(game.getMyDefenceMap().getHeight()));
+            game.createCannonTower(rnd.nextInt(4),rnd.nextInt(game.getDefenceMap().getWidth()),rnd.nextInt(game.getDefenceMap().getHeight()));
 
         }
     }
