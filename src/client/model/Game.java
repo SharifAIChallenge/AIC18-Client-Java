@@ -446,10 +446,10 @@ public class Game implements World {
 
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
             if (!isMymap) {
-                beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
+                beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
                 getAttackMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             } else {
-                beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
+                beansInThisCycle.add(new BeanEvent(Owner.ENEMY, new Point(x, y)));
                 getDefenceMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             }
         }
