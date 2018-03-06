@@ -204,7 +204,11 @@ public class Game implements World {
         ArcherTower.DAMAGE_COEFF = archerDetails.get(4).getAsDouble();
         ArcherTower.ATTACK_SPEED = archerDetails.get(5).getAsInt();
         ArcherTower.ATTACK_RANGE = archerDetails.get(6).getAsInt();
-        ArcherTower.INITIAL_PRICE_INCREASE=archerDetails.get(8).getAsInt();
+        try {
+            ArcherTower.INITIAL_PRICE_INCREASE=archerDetails.get(8).getAsInt();
+        }catch (Exception e){
+            ArcherTower.INITIAL_PRICE_INCREASE=5;
+        }
 
         CannonTower.INITIAL_PRICE = canonDetails.get(0).getAsInt();
         CannonTower.INITIAL_LEVEL_UP_PRICE = canonDetails.get(1).getAsInt();
@@ -213,7 +217,11 @@ public class Game implements World {
         CannonTower.DAMAGE_COEFF = canonDetails.get(4).getAsDouble();
         CannonTower.ATTACK_SPEED = canonDetails.get(5).getAsInt();
         CannonTower.ATTACK_RANGE = canonDetails.get(6).getAsInt();
-        CannonTower.INITIAL_PRICE_INCREASE=canonDetails.get(8).getAsInt();
+        try {
+            CannonTower.INITIAL_PRICE_INCREASE=canonDetails.get(8).getAsInt();
+        }catch (Exception e){
+            CannonTower.INITIAL_PRICE_INCREASE=5;
+        }
 
     }
 
