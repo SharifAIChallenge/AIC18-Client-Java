@@ -432,7 +432,7 @@ public class Game implements World {
             JsonArray tmpTower = desTowersArray.get(i).getAsJsonArray();
 
             int tid = tmpTower.get(1).getAsInt();
-            boolean isMymap = tmpTower.get(0).getAsBoolean();
+            boolean isMymap = tmpTower.get(0).getAsInt() == 1;
 
             Log.d(TAG, "Tower destroyed  -> " + "isMymap:" + isMymap + " - tId:" + tid);
 
@@ -450,7 +450,7 @@ public class Game implements World {
             int x = tmpBean.get(1).getAsJsonObject().get("x").getAsInt();
             int y = tmpBean.get(1).getAsJsonObject().get("y").getAsInt();
 
-            boolean isMymap = tmpBean.get(0).getAsBoolean();
+           boolean isMymap = tmpBean.get(0).getAsInt() == 1;
 
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
             if (!isMymap) {
@@ -469,7 +469,7 @@ public class Game implements World {
 
             int x = tmpstorm.get(1).getAsJsonObject().get("x").getAsInt();
             int y = tmpstorm.get(1).getAsJsonObject().get("y").getAsInt();
-            boolean isMymap = tmpstorm.get(0).getAsBoolean();
+            boolean isMymap = tmpstorm.get(0).getAsInt() == 1;
 
             if (!isMymap)
                 stormsInThisCycle.add(new StormEvent(Owner.ENEMY, new Point(x, y)));
