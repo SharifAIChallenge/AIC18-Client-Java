@@ -12,9 +12,10 @@ public class CannonTower extends Tower {
     public static double DAMAGE_COEFF;
     public static int ATTACK_SPEED;
     public static int ATTACK_RANGE;
+    public static int INITIAL_PRICE_INCREASE;
 
-    public CannonTower(int x, int y, Owner owner, int level, int id) {
-        super(x, y, owner, level, id);
+    public CannonTower(int x, int y, Owner owner, int level, int id,int price) {
+        super(x, y, owner, level, id,price);
     }
 
     public int getDamage(int level) {
@@ -22,18 +23,6 @@ public class CannonTower extends Tower {
     }
 
     public int getDamage(){return this.getDamage(this.getLevel());}
-
-    public int getPrice(int level) {
-        int result = INITIAL_PRICE;
-        for (int i = 2; i <= level; i++)
-            result += INITIAL_LEVEL_UP_PRICE * Math.pow(PRICE_COEFF, i - 2);
-        return result;
-    }
-
-    public int getPrice(){
-        return this.getPrice(this.getLevel());
-    }
-
 
     public int getAttackRange() {
         return ATTACK_RANGE;

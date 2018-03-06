@@ -6,10 +6,12 @@ package client.model;
 public class Tower extends Entity {
 
     private int level;
+    private int price;
 
-    public Tower(int x, int y, Owner owner,int level,int id) {
+    public Tower(int x, int y, Owner owner,int level,int id,int price) {
         super(x, y, owner,id);
         this.level=level;
+        this.price=price;
 
     }
 
@@ -23,11 +25,7 @@ public class Tower extends Entity {
 
     public int getDamage(){return 0;}
 
-    public int getPrice(int level){
-        return 0;
-    }
-
-    public int getPrice(){return 0;}
+    public int getPrice(){return price;}
 
     public int getAttackRange(){return 0;}
 

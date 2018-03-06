@@ -25,6 +25,7 @@ public class AI {
 
         Log.d(TAG,"lightTurn Called"+" Turn:"+game.getCurrentTurn());
 
+        game.plantBean(1,0);
         int t=rnd.nextInt();
         if(t%3==2){
             game.createArcherTower(rnd.nextInt(4),rnd.nextInt(game.getDefenceMap().getWidth()),rnd.nextInt(game.getDefenceMap().getHeight()));
