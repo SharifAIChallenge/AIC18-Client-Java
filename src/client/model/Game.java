@@ -461,7 +461,7 @@ public class Game implements World {
            boolean isMymap = tmpBean.get(0).getAsInt() == 1;
 
             Log.d(TAG, "Bean planted At x:" + x + ",y:" + y + " -> " + "isMyMap:" + isMymap);
-            if (!isMymap) {
+            if (isMymap) {
                 beansInThisCycle.add(new BeanEvent(Owner.ME, new Point(x, y)));
                 getAttackMap().getCellsGrid()[y][x] = new BlockCell(x, y);
             } else {
